@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Guest Dashboard</title>
+
+
+<style>
+body {
+    margin:0;
+    font-family:Arial;
+    background:#f4f6f9;
+}
+
+
+/* SIDEBAR */
+.sidebar {
+    width:220px;
+    height:100vh;
+    background:linear-gradient(180deg,#6a11cb,#2575fc);
+    position:fixed;
+    color:white;
+    padding:20px;
+}
+
+
+.sidebar a {
+    display:block;
+    color:white;
+    margin:15px 0;
+    text-decoration:none;
+}
+
+
+/* MAIN CONTENT (IMPORTANT FIX) */
+.main {
+    margin-left:240px;
+    padding:20px;
+}
+
+
+/* CARDS */
+.cards {
+    display:flex;
+    gap:20px;
+    margin-bottom:20px;
+}
+
+
+.card {
+    flex:1;
+    padding:20px;
+    border-radius:10px;
+    color:white;
+    text-align:center;
+}
+
+
+.blue { background:#4facfe; }
+.red { background:#f5576c; }
+.green { background:#43e97b; }
+.purple { background:#9d50bb; }
+
+
+/* BOX */
+.box {
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    margin-top:20px;
+}
+
+
+/* BUTTON */
+button {
+    background:#6a11cb;
+    color:white;
+    padding:10px;
+    border:none;
+    border-radius:5px;
+}
+</style>
+</head>
+
+
+<body>
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>ReviewGuard</h2>
+
+
+    <a href="/dashboard">Dashboard</a>
+    <a href="/detection">Review Detection</a>
+
+
+    <a href="/login">Login</a>
+    <a href="/signup">Create Account</a>
+</div>
+
+
+<!-- MAIN (FIXED LAYOUT) -->
+<div class="main">
+
+
+    <h1>Welcome to ReviewGuard</h1>
+    <p>Advanced fake review detection powered by machine learning</p>
+
+
+    <!-- CARDS -->
+    <div class="cards">
+
+
+        <div class="card blue">
+            <h3>Total Reviews</h3>
+            <p>{{ total }}</p>
+        </div>
+
+
+        <div class="card red">
+            <h3>Fake Reviews</h3>
+            <p>{{ fake }}</p>
+        </div>
+
+
+        <div class="card green">
+            <h3>Genuine Reviews</h3>
+            <p>{{ real }}</p>
+        </div>
+
+
+        <div class="card purple">
+            <h3>Accuracy</h3>
+            <p>{{ accuracy }}%</p>
+        </div>
+
+
+    </div>
+
+
+    <!-- INFO -->
+    <div class="box">
+        <h2>How It Works</h2>
+
+
+        <ol>
+            <li>Select Platform & Product</li>
+            <li>Enter Review Text</li>
+            <li>Get Instant Result</li>
+        </ol>
+
+
+        <a href="/login">
+            <button>Login to Save Results</button>
+        </a>
+    </div>
+
+
+</div>
+
+
+</body>
+</html>

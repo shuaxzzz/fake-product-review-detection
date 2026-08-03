@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<title>ReviewShield User Dashboard</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+    font-family:'Outfit',sans-serif;
+    margin:0;
+}
+
+.gradient-primary{
+    background:linear-gradient(135deg,#ec4899 0%,#8b5cf6 50%,#3b82f6 100%);
+}
+
+.gradient-dark{
+    background:linear-gradient(180deg,#1e1b4b 0%,#312e81 100%);
+}
+
+.nav-item{
+    transition:0.3s;
+}
+
+.nav-item:hover{
+    background:rgba(255,255,255,0.1);
+    transform:translateX(5px);
+}
+
+.card{
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+/* ADDED: matches the fixed-sidebar pattern already used on
+   detection.html and guest_dashboard.html. Without this, the sidebar
+   scrolled away with the page content - on a long dashboard (especially
+   after adding the fake/genuine bar chart section) the profile/logout
+   area at the bottom of the sidebar wasn't visible until the user
+   scrolled the whole page down. */
+html, body{
+    overflow-x:hidden;
+}
+
+aside{
+    width:18rem;
+    position:fixed;
+    top:0;
+    left:0;
+    height:100vh;
+}
+
+main{
+    margin-left:18rem;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="flex min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100">
+
+    <!-- SIDEBAR -->
+    <aside class="gradient-dark text-white flex flex-col shadow-2xl">
+
+        <!-- LOGO -->
+        <div class="p-8 border-b border-white border-opacity-10">
+
+            <div class="flex items-center gap-4">
+
+                <div class="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center shadow-xl">
+
+                    <svg class="w-8 h-8 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+
+                </div>
+
+                <div>
+                    <h1 class="text-2xl font-black">ReviewShield</h1>
+                    <p class="text-sm text-purple-200">
+                        Fake Product Review Detection
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- NAVIGATION -->
+        <nav class="flex-1 p-6 space-y-3">
+
+            <a href="/dashboard"
+            class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-white bg-opacity-10">
+
+                <svg class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+
+                <path stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+
+                Dashboard
+            </a>
+
+            <a href="/detection"
+            class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+                <svg class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+
+                <path stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+
+                Review Detection
+            </a>
+
+            <a href="/history"
+            class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+                <svg class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+
+                <path stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+
+                History
+            </a>
+
+            <a href="/profile"
+            class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+                <svg class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+
+                <path stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+
+                My Profile
+            </a>
+
+            <a href="/logout"
+            class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-red-500 hover:bg-red-600">
+
+                <svg class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+
+                <path stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7"/>
+                </svg>
+
+                Logout
+            </a>
+
+        </nav>
+
+        <!-- USER INFO -->
+        <div class="p-6 border-t border-white border-opacity-10">
+
+            <div class="bg-white bg-opacity-10 rounded-2xl p-4">
+
+                <div class="flex items-center gap-4">
+
+                    <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center font-bold text-lg">
+                        {{ user.username[0] }}
+                    </div>
+
+                    <div>
+                        <p class="font-bold">{{ user.username }}</p>
+                        <p class="text-sm text-purple-200">
+                            {{ user.email }}
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-10">
+
+        <!-- HEADER -->
+        <div class="mb-10">
+
+            <h1 class="text-4xl font-black text-slate-800 mb-2">
+                Welcome, {{ user.username }}
+            </h1>
+
+            <p class="text-slate-500 text-lg">
+                Monitor and analyze fake product reviews easily.
+            </p>
+
+        </div>
+
+        <!-- DASHBOARD CARDS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+            <!-- TOTAL -->
+            <div class="card bg-gradient-to-r from-blue-500 to-cyan-400 text-white p-7 rounded-3xl shadow-xl">
+
+                <h3 class="text-lg font-semibold mb-2">
+                    Total Reviews
+                </h3>
+
+                <p class="text-4xl font-black">
+                    {{ total }}
+                </p>
+
+            </div>
+
+            <!-- FAKE -->
+            <div class="card bg-gradient-to-r from-red-500 to-pink-500 text-white p-7 rounded-3xl shadow-xl">
+
+                <h3 class="text-lg font-semibold mb-2">
+                    Fake Reviews
+                </h3>
+
+                <p class="text-4xl font-black">
+                    {{ fake }}
+                </p>
+
+                <p class="text-sm font-semibold text-white text-opacity-80 mt-1">
+                    {{ fake_pct }}% of your reviews
+                </p>
+
+            </div>
+
+            <!-- GENUINE -->
+            <div class="card bg-gradient-to-r from-green-500 to-emerald-400 text-white p-7 rounded-3xl shadow-xl">
+
+                <h3 class="text-lg font-semibold mb-2">
+                    Genuine Reviews
+                </h3>
+
+                <p class="text-4xl font-black">
+                    {{ real }}
+                </p>
+
+                <p class="text-sm font-semibold text-white text-opacity-80 mt-1">
+                    {{ genuine_pct }}% of your reviews
+                </p>
+
+            </div>
+
+            <!-- ACCURACY -->
+            <!-- CHANGED: this card is about MODEL CORRECTNESS, judged by
+                 your "Was this correct?" feedback in History - NOT the
+                 fake/genuine mix above (that's a different question).
+                 Shows a clear placeholder instead of a blank/odd value
+                 when no feedback has been given yet. -->
+            <div class="card bg-gradient-to-r from-purple-500 to-indigo-500 text-white p-7 rounded-3xl shadow-xl">
+
+                <h3 class="text-lg font-semibold mb-2">
+                    Prediction Accuracy
+                </h3>
+
+                {% if accuracy is not none %}
+                <p class="text-4xl font-black">
+                    {{ accuracy }}%
+                </p>
+                <p class="text-sm font-semibold text-white text-opacity-80 mt-1">
+                    based on {{ feedback_total }} confirmed result{{ "s" if feedback_total != 1 else "" }}
+                </p>
+                {% else %}
+                <p class="text-2xl font-black">
+                    No feedback yet
+                </p>
+                <p class="text-sm font-semibold text-white text-opacity-80 mt-1">
+                    Mark results "correct/incorrect" in History
+                </p>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <!-- ADDED: fake vs genuine bar chart. The cards above already
+             show the raw counts, but a bar makes the PROPORTION visually
+             obvious at a glance, especially as total grows. Built with
+             plain divs/widths (no JS chart library) since it's just two
+             values - keeps this page dependency-free. -->
+        <div class="bg-white rounded-3xl shadow-xl p-10 border border-slate-200 mt-10">
+
+            <h2 class="text-2xl font-black text-slate-800 mb-1">
+                Fake vs Genuine Breakdown
+            </h2>
+
+            <p class="text-slate-500 font-medium mb-6">
+                Composition of your {{ total }} saved review{{ "s" if total != 1 else "" }}
+            </p>
+
+            {% if total > 0 %}
+
+            <div class="space-y-5">
+
+                <!-- FAKE BAR -->
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <span class="font-bold text-slate-700">Fake</span>
+                        <span class="font-bold text-red-500">{{ fake }} ({{ fake_pct }}%)</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-5 rounded-full overflow-hidden">
+                        <div class="h-5 rounded-full bg-gradient-to-r from-red-500 to-pink-500"
+                             style="width: {{ fake_pct }}%;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GENUINE BAR -->
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <span class="font-bold text-slate-700">Genuine</span>
+                        <span class="font-bold text-green-500">{{ real }} ({{ genuine_pct }}%)</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-5 rounded-full overflow-hidden">
+                        <div class="h-5 rounded-full bg-gradient-to-r from-green-500 to-emerald-400"
+                             style="width: {{ genuine_pct }}%;">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <div class="text-center py-10 text-slate-400 font-semibold">
+                No reviews saved yet -
+                <a href="/detection" class="text-pink-500 underline">analyze your first review</a>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+<!-- BOTTOM SECTION -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
+
+    <!-- SYSTEM OVERVIEW -->
+    <div class="bg-white rounded-3xl shadow-xl p-10 border border-slate-200">
+
+        <h2 class="text-2xl font-black text-slate-800 mb-4">
+            System Overview
+        </h2>
+
+        <p class="text-slate-600 leading-relaxed mb-6">
+            This dashboard provides analytics and insights for the fake review detection system.
+            Users can detect fake product reviews, monitor review statistics,
+            and analyze review authenticity using machine learning techniques.
+        </p>
+
+        <a href="/detection"
+class="inline-flex items-center gap-3 gradient-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition">
+
+    Start Detection
+
+    <svg class="w-5 h-5"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24">
+
+        <path stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2.5"
+        d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+
+    </svg>
+
+</a>
+
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="gradient-dark rounded-3xl shadow-xl p-10 text-white">
+
+        <h3 class="text-2xl font-black mb-6">
+            How It Works
+        </h3>
+
+        <div class="space-y-5">
+
+            <!-- STEP 1 -->
+            <div class="flex items-start gap-4">
+
+                <div class="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center font-black flex-shrink-0">
+                    1
+                </div>
+
+                <div>
+                    <p class="font-bold text-lg mb-1">
+                        Select Platform & Product
+                    </p>
+
+                    <p class="text-purple-200 text-sm">
+                        Choose Shopee or Lazada and select your product.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="flex items-start gap-4">
+
+                <div class="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center font-black flex-shrink-0">
+                    2
+                </div>
+
+                <div>
+                    <p class="font-bold text-lg mb-1">
+                        Paste Review Text
+                    </p>
+
+                    <p class="text-purple-200 text-sm">
+                        Copy and paste the review for analysis.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="flex items-start gap-4">
+
+                <div class="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center font-black flex-shrink-0">
+                    3
+                </div>
+
+                <div>
+                    <p class="font-bold text-lg mb-1">
+                        Get Instant Results
+                    </p>
+
+                    <p class="text-purple-200 text-sm">
+                        Receive detailed fake review detection results instantly.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<title>ReviewShield — Fake Review Detection</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --ink:#0f0b1f;
+    --ink-2:#1b1430;
+    --pink:#ec4899;
+    --violet:#8b5cf6;
+    --blue:#3b82f6;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Outfit',sans-serif;
+    margin:0;
+    background:var(--ink);
+    color:#e8e4f5;
+    overflow-x:hidden;
+}
+
+.mono{
+    font-family:'JetBrains Mono',monospace;
+}
+
+.gradient-primary{
+    background:linear-gradient(135deg,var(--pink) 0%,var(--violet) 50%,var(--blue) 100%);
+}
+
+.gradient-text{
+    background:linear-gradient(135deg,var(--pink) 0%,var(--violet) 55%,var(--blue) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.bg-glow{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(90px);
+    opacity:0.35;
+    pointer-events:none;
+}
+
+.noise-grid{
+    background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 42px 42px;
+}
+
+/* ---------- Scan card ---------- */
+.scan-card{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.10);
+    border-radius:1.5rem;
+    backdrop-filter:blur(10px);
+}
+
+.flag-line{
+    opacity:0;
+    transform:translateX(-8px);
+    animation:flagIn 0.5s ease forwards;
+}
+
+@keyframes flagIn{
+    to{ opacity:1; transform:translateX(0); }
+}
+
+.scan-beam{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, transparent, rgba(139,92,246,0.18), transparent);
+    height:40%;
+    animation:scanMove 3.2s ease-in-out infinite;
+    pointer-events:none;
+    border-radius:1.5rem;
+}
+
+@keyframes scanMove{
+    0%{ transform:translateY(-10%); opacity:0; }
+    15%{ opacity:1; }
+    85%{ opacity:1; }
+    100%{ transform:translateY(260%); opacity:0; }
+}
+
+.highlight-fake{
+    background:rgba(236,72,153,0.18);
+    border-bottom:2px solid rgba(236,72,153,0.7);
+    border-radius:3px;
+    padding:0 2px;
+}
+
+.pulse-dot{
+    animation:pulseDot 1.8s ease-in-out infinite;
+}
+
+@keyframes pulseDot{
+    0%,100%{ opacity:1; }
+    50%{ opacity:0.35; }
+}
+
+/* ---------- Reveal on scroll ---------- */
+.reveal{
+    opacity:0;
+    transform:translateY(18px);
+    transition:opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.is-visible{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* ---------- Counter ring ---------- */
+.stat-card{
+    background:rgba(255,255,255,0.035);
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+.btn-primary{
+    transition:transform 0.25s ease, box-shadow 0.25s ease;
+}
+.btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 16px 40px -10px rgba(139,92,246,0.55);
+}
+
+.btn-ghost{
+    transition:all 0.25s ease;
+}
+.btn-ghost:hover{
+    background:rgba(255,255,255,0.08);
+    border-color:rgba(255,255,255,0.3);
+}
+
+.step-num{
+    font-family:'JetBrains Mono',monospace;
+    -webkit-text-stroke:1px rgba(255,255,255,0.25);
+    color:transparent;
+}
+
+@media (prefers-reduced-motion: reduce){
+    .scan-beam, .pulse-dot, .flag-line{ animation:none !important; }
+    .reveal{ transition:none !important; opacity:1 !important; transform:none !important; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="relative z-20 max-w-7xl mx-auto px-6 md:px-10 py-6 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+        <div class="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-lg">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+        </div>
+        <span class="font-bold text-lg tracking-tight">ReviewShield</span>
+    </div>
+
+    <div class="hidden md:flex items-center gap-3">
+        <a href="/login" class="px-5 py-2.5 rounded-full text-sm font-semibold text-slate-300 hover:text-white transition">
+            Log in
+        </a>
+        <a href="/signup" class="btn-primary px-5 py-2.5 gradient-primary rounded-full text-sm font-bold shadow-lg">
+            Create account
+        </a>
+    </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="relative max-w-7xl mx-auto px-6 md:px-10 pt-10 pb-24 md:pt-16">
+
+    <div class="bg-glow w-[460px] h-[460px] -top-20 -left-40" style="background:var(--violet)"></div>
+    <div class="bg-glow w-[420px] h-[420px] top-40 -right-40" style="background:var(--pink)"></div>
+
+    <div class="relative grid md:grid-cols-2 gap-16 items-center">
+
+        <!-- LEFT: copy -->
+        <div class="reveal">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold mono text-violet-300 mb-7">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+                Textual · Sentiment · Behavioral ·  Machine Learning Detection
+            </div>
+
+            <h1 class="text-5xl md:text-6xl font-black leading-[1.05] tracking-tight mb-6">
+                Every review<br>
+                tells a story.<br>
+                <span class="gradient-text">Some of them lie.</span>
+            </h1>
+
+            <p class="text-slate-400 text-lg leading-relaxed mb-9 max-w-md">
+                ReviewShield reads a product review the way a fraud analyst would — checking its language, its sentiment, and its timing against thousands of others — and tells you, in plain terms, why it looks genuine or fake.
+            </p>
+
+            <div class="flex flex-wrap gap-4 mb-10">
+                <a href="/signup">
+                    <button class="btn-primary px-8 py-4 gradient-primary rounded-2xl font-black shadow-xl">
+                        Create free account
+                    </button>
+                </a>
+                <a href="/continue_as_guest">
+                    <button class="btn-ghost px-8 py-4 border-2 border-white/15 rounded-2xl font-bold text-white">
+                        Try a review as guest →
+                    </button>
+                </a>
+            </div>
+
+            <p class="text-sm text-slate-500">
+                Already have an account? <a href="/login" class="text-violet-300 font-semibold hover:underline">Log in</a>
+            </p>
+        </div>
+
+        <!-- RIGHT: live "scan" demo card -->
+        <div class="reveal relative">
+            <div class="scan-card relative overflow-hidden p-7 shadow-2xl">
+                <div class="scan-beam"></div>
+
+                <div class="flex items-center justify-between mb-5">
+                    <span class="mono text-xs text-slate-400 uppercase tracking-wider">Incoming review</span>
+                    <span id="scanRefId" class="mono text-xs text-slate-500">#A1-2291</span>
+                </div>
+
+                <p id="scanReviewText" class="text-[15px] leading-relaxed text-slate-200 mb-6">
+                    "BEST PRODUCT EVER!!! Must buy, highly recommend to everyone, changed my life!!!"
+                    <span class="highlight-fake">5 exclamation marks</span>,
+                    posted with <span class="highlight-fake">41 other reviews today</span>
+                </p>
+
+                <div id="scanFlagList" class="space-y-2.5 mb-6">
+                    <div class="flag-line flex items-center justify-between text-sm" style="animation-delay:0.1s">
+                        <span class="text-slate-300">Exclamation spam</span>
+                        <span class="mono text-pink-400 font-semibold">triggered</span>
+                    </div>
+                    <div class="flag-line flex items-center justify-between text-sm" style="animation-delay:0.35s">
+                        <span class="text-slate-300">Hype phrasing</span>
+                        <span class="mono text-pink-400 font-semibold">triggered</span>
+                    </div>
+                    <div class="flag-line flex items-center justify-between text-sm" style="animation-delay:0.6s">
+                        <span class="text-slate-300">Burst activity (24h)</span>
+                        <span class="mono text-pink-400 font-semibold">triggered</span>
+                    </div>
+                    <div class="flag-line flex items-center justify-between text-sm" style="animation-delay:0.85s">
+                        <span class="text-slate-300">Extreme sentiment</span>
+                        <span class="mono text-pink-400 font-semibold">triggered</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-5 border-t border-white/10">
+                    <span class="text-sm font-semibold text-slate-400">Verdict</span>
+                    <span id="scanVerdict" class="px-4 py-1.5 rounded-full bg-pink-500/15 border border-pink-500/40 text-pink-300 font-black text-sm">
+                        Likely Fake · 87%
+                    </span>
+                </div>
+            </div>
+
+            <p class="text-center text-xs text-slate-500 mt-4 mono">
+                random forest + xgboost ensemble, scored live
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<!-- ============ STATS STRIP ============ -->
+<section class="relative max-w-7xl mx-auto px-6 md:px-10 py-14 reveal">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+        <div class="stat-card rounded-2xl p-6 text-center">
+            <div class="text-3xl font-black gradient-text mb-1">2</div>
+            <div class="text-xs text-slate-400 font-medium">Model ensemble<br>Random Forest + XGBoost</div>
+        </div>
+
+        <div class="stat-card rounded-2xl p-6 text-center">
+            <div class="text-3xl font-black gradient-text mb-1">10</div>
+            <div class="text-xs text-slate-400 font-medium">Rule-based<br>behavioural signals</div>
+        </div>
+
+        <div class="stat-card rounded-2xl p-6 text-center">
+            <div class="text-3xl font-black gradient-text mb-1">English/Bahasa Melayu</div>
+            <div class="text-xs text-slate-400 font-medium">Bilingual sentiment<br>analysis</div>
+        </div>
+
+        <div class="stat-card rounded-2xl p-6 text-center">
+            <div class="text-3xl font-black gradient-text mb-1">Live</div>
+            <div class="text-xs text-slate-400 font-medium">Per-review<br>explainability</div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="relative max-w-7xl mx-auto px-6 md:px-10 py-24">
+
+    <div class="reveal text-center max-w-2xl mx-auto mb-16">
+        <p class="mono text-xs text-violet-300 uppercase tracking-widest mb-3">How a review gets scored</p>
+        <h2 class="text-4xl md:text-5xl font-black tracking-tight">From raw text to a verdict you can trust</h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+
+        <div class="reveal stat-card rounded-3xl p-8">
+            <span class="step-num text-6xl font-black">01</span>
+            <h3 class="text-xl font-bold mt-4 mb-3">Read the language</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+                Every review is cleaned and vectorised, then scored for sentiment in English and Bahasa Melayu — including local negators like "tak" and "bukan" that plain English tools miss entirely.
+            </p>
+        </div>
+
+        <div class="reveal stat-card rounded-3xl p-8" style="transition-delay:0.1s">
+            <span class="step-num text-6xl font-black">02</span>
+            <h3 class="text-xl font-bold mt-4 mb-3">Check the behaviour</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+                Beyond the words: is this exact text duplicated elsewhere? Did the product just get a burst of reviews overnight? Behavioural flags catch what wording alone can't.
+            </p>
+        </div>
+
+        <div class="reveal stat-card rounded-3xl p-8" style="transition-delay:0.2s">
+            <span class="step-num text-6xl font-black">03</span>
+            <h3 class="text-xl font-bold mt-4 mb-3">Explain the verdict</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+                Two models vote on a final score, then every triggered signal is laid out plainly — so the result is never a black box, even to someone outside ML.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="relative max-w-5xl mx-auto px-6 md:px-10 py-20 mb-10">
+    <div class="reveal relative overflow-hidden rounded-[2rem] p-12 md:p-16 text-center gradient-primary">
+        <div class="absolute inset-0 noise-grid opacity-20"></div>
+        <h2 class="relative text-3xl md:text-4xl font-black mb-4">
+            Paste a review. See what it's hiding.
+        </h2>
+        <p class="relative text-white/85 mb-8 max-w-xl mx-auto">
+            No account needed to try it — continue as a guest and run your first detection in seconds.
+        </p>
+        <a href="/continue_as_guest" class="relative inline-block">
+            <button class="px-10 py-4 bg-white text-purple-700 font-black rounded-2xl shadow-2xl hover:scale-105 transition">
+                Continue as Guest
+            </button>
+        </a>
+    </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="relative max-w-7xl mx-auto px-6 md:px-10 py-10 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+        <div class="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+        </div>
+        <span class="text-sm text-slate-500">ReviewShield :  Fake Product Review Detection Using Machine Learning and Sentiment - Behavioral Analysis</span>
+    </div>
+    <p class="text-xs text-slate-600 mono"> Built with scikit-learn, XGBoost &amp; VADER</p>
+</footer>
+
+<script>
+// Reveal-on-scroll for sections
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.15 });
+
+revealEls.forEach(el => io.observe(el));
+
+// Hero card is always visible above the fold — show immediately
+document.addEventListener('DOMContentLoaded', () => {
+    const hero = document.querySelectorAll('section')[0];
+    hero.querySelectorAll('.reveal').forEach(el => el.classList.add('is-visible'));
+});
+
+// ============================================================
+// SAMPLE REVIEWS FOR THE HERO "SCAN" CARD
+// ------------------------------------------------------------
+// These are illustrative examples, not pulled live from MongoDB.
+// Each one mirrors the same flag names used in app.py's breakdown
+// (extract_features() / predict()), so the demo stays consistent
+// with what the real /predict route actually checks. One is picked
+// at random on every page load to keep the homepage feeling alive
+// without needing a database call on a public, unauthenticated page.
+// ============================================================
+const sampleReviews = [
+    {
+        id: "#A1-2291",
+        text: '"BEST PRODUCT EVER!!! Must buy, highly recommend to everyone, changed my life!!!"',
+        highlights: ["5 exclamation marks", "41 other reviews today"],
+        flags: [
+            { label: "Exclamation spam", triggered: true },
+            { label: "Hype phrasing", triggered: true },
+            { label: "Burst activity (24h)", triggered: true },
+            { label: "Extreme sentiment", triggered: true }
+        ],
+        verdict: "fake", verdictLabel: "Likely Fake · 87%"
+    },
+    {
+        id: "#B7-0834",
+        text: '"Sangat bagus!! Mesti beli, penghantaran cepat, produk original!!!"',
+        highlights: ["3 exclamation marks", "duplicate of 4 other reviews"],
+        flags: [
+            { label: "Hype phrasing (BM)", triggered: true },
+            { label: "Duplicate review", triggered: true },
+            { label: "Exclamation spam", triggered: true },
+            { label: "Detailed review", triggered: false }
+        ],
+        verdict: "fake", verdictLabel: "Likely Fake · 79%"
+    },
+    {
+        id: "#C2-5510",
+        text: '"Good"',
+        highlights: ["2 words", "posted seconds after the last review"],
+        flags: [
+            { label: "Short review", triggered: true },
+            { label: "Burst activity (24h)", triggered: true },
+            { label: "Common genuine phrasing", triggered: false },
+            { label: "Extreme sentiment", triggered: false }
+        ],
+        verdict: "fake", verdictLabel: "Likely Fake · 62%"
+    },
+    {
+        id: "#D9-1187",
+        text: '"Selepas guna seminggu, kulit jadi lebih lembap. Tak ada kesan sampingan, akan beli lagi."',
+        highlights: ["experience-based wording", "calm tone"],
+        flags: [
+            { label: "Detailed review", triggered: true },
+            { label: "Experience-based phrasing (BM)", triggered: true },
+            { label: "Exclamation spam", triggered: false },
+            { label: "Extreme sentiment", triggered: false }
+        ],
+        verdict: "genuine", verdictLabel: "Likely Genuine · 91%"
+    },
+    {
+        id: "#E4-7762",
+        text: '"Fast delivery, no issues so far. Packaging was a bit damaged but the item works fine."',
+        highlights: ["balanced tone", "no spammy punctuation"],
+        flags: [
+            { label: "Common genuine phrasing", triggered: true },
+            { label: "Detailed review", triggered: true },
+            { label: "Hype phrasing", triggered: false },
+            { label: "Duplicate review", triggered: false }
+        ],
+        verdict: "genuine", verdictLabel: "Likely Genuine · 88%"
+    },
+    {
+        id: "#F0-3346",
+        text: '"Lambat sampai, tapi produk berfungsi seperti yang diiklankan. Boleh terima untuk harga ini."',
+        highlights: ["mixed sentiment", "no burst activity"],
+        flags: [
+            { label: "Extreme sentiment", triggered: false },
+            { label: "Detailed review", triggered: true },
+            { label: "Burst activity (24h)", triggered: false },
+            { label: "Exclamation spam", triggered: false }
+        ],
+        verdict: "genuine", verdictLabel: "Likely Genuine · 84%"
+    }
+];
+
+function renderScanCard(sample) {
+    const idEl = document.getElementById('scanRefId');
+    const textEl = document.getElementById('scanReviewText');
+    const flagListEl = document.getElementById('scanFlagList');
+    const verdictEl = document.getElementById('scanVerdict');
+
+    if (!idEl || !textEl || !flagListEl || !verdictEl) return;
+
+    idEl.textContent = sample.id;
+
+    const highlightHtml = sample.highlights
+        .map(h => `<span class="highlight-fake">${h}</span>`)
+        .join(', posted with ');
+
+    textEl.innerHTML = `${sample.text} ${highlightHtml}`;
+
+    flagListEl.innerHTML = sample.flags.map((flag, i) => {
+        const delay = (0.1 + i * 0.25).toFixed(2);
+        const statusColor = flag.triggered ? 'text-pink-400' : 'text-emerald-400';
+        const statusText = flag.triggered ? 'triggered' : 'clear';
+        return `
+            <div class="flag-line flex items-center justify-between text-sm" style="animation-delay:${delay}s">
+                <span class="text-slate-300">${flag.label}</span>
+                <span class="mono ${statusColor} font-semibold">${statusText}</span>
+            </div>
+        `;
+    }).join('');
+
+    if (sample.verdict === 'fake') {
+        verdictEl.className = "px-4 py-1.5 rounded-full bg-pink-500/15 border border-pink-500/40 text-pink-300 font-black text-sm";
+    } else {
+        verdictEl.className = "px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-black text-sm";
+    }
+    verdictEl.textContent = sample.verdictLabel;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const pick = sampleReviews[Math.floor(Math.random() * sampleReviews.length)];
+    renderScanCard(pick);
+});
+</script>
+
+</body>
+</html>

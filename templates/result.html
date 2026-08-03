@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<title>Detection Result</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+    font-family:'Outfit',sans-serif;
+    margin:0;
+}
+
+.gradient-primary{
+    background:linear-gradient(135deg,#ec4899 0%,#8b5cf6 50%,#3b82f6 100%);
+}
+
+.gradient-dark{
+    background:linear-gradient(180deg,#1e1b4b 0%,#312e81 100%);
+}
+
+.nav-item{
+    transition:0.3s;
+}
+
+.nav-item:hover{
+    background:rgba(255,255,255,0.1);
+    transform:translateX(5px);
+}
+
+.card{
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+html,body{
+    overflow-x:hidden;
+}
+
+/* SAME AS DETECTION PAGE */
+aside{
+    width:18rem;
+    position:fixed;
+    top:0;
+    left:0;
+    height:100vh;
+}
+
+main{
+    margin-left:18rem;
+}
+
+</style>
+</head>
+<body>
+
+<div class="flex min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100">
+
+   <!-- SIDEBAR -->
+<aside class="gradient-dark text-white flex flex-col shadow-2xl">
+
+    <!-- LOGO -->
+    <div class="p-8 border-b border-white border-opacity-10">
+
+        <div class="flex items-center gap-4">
+
+            <div class="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center shadow-xl">
+
+                <svg class="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+
+                <path stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+
+            </div>
+
+            <div>
+                <h1 class="text-2xl font-black">ReviewShield</h1>
+
+                <p class="text-sm text-purple-200">
+                    Fake Product Review Detection
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="flex-1 p-6 space-y-3">
+
+        <a href="/dashboard"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-white bg-opacity-10">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+
+            Dashboard
+        </a>
+
+        <a href="/detection"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+
+            Review Detection
+        </a>
+
+        {% if session.get('user') %}
+
+        <a href="/history"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+
+            History
+        </a>
+
+        <a href="/profile"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+
+            My Profile
+        </a>
+
+        <a href="/logout"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-red-500 hover:bg-red-600">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7"/>
+            </svg>
+
+            Logout
+        </a>
+
+        {% else %}
+
+        <a href="/login"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 12h14"/>
+            </svg>
+
+            Login
+        </a>
+
+        <a href="/signup"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-pink-500 hover:bg-pink-600">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"/>
+            </svg>
+
+            Create Account
+        </a>
+
+        {% endif %}
+
+        {% if session.get('guest') %}
+        <a href="/exit_guest"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-red-500 hover:bg-red-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+     Exit Guest Mode
+</a>
+{% endif %}
+
+    </nav>
+
+    <!-- USER -->
+    <div class="p-6 border-t border-white border-opacity-10">
+
+        <div class="bg-white bg-opacity-10 rounded-2xl p-4">
+
+            {% if user %}
+
+            <div class="flex items-center gap-4">
+
+                <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center font-bold text-lg">
+                    {{ session['user']['username'][0] }}
+                </div>
+
+                <div>
+                    <p class="font-bold">{{ session['user']['username'] }}</p>
+
+                    <p class="text-sm text-purple-200">
+                        {{ session['user']['email'] }}
+                    </p>
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <div class="flex items-center gap-4">
+
+                <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center font-bold text-lg">
+                    G
+                </div>
+
+                <div>
+                    <p class="font-bold">Guest User</p>
+
+                    <p class="text-sm text-purple-200">
+                        Login to save results
+                    </p>
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    </aside>
+
+<!-- PAGE HEADER -->
+    <main class="flex-1 p-10">
+
+        <!-- HEADER -->
+        <div class="mb-10">
+
+  <h1 class="text-4xl font-black">Detection Result</h1>
+    <p class="text-slate-500">Review analysis completed successfully.</p>
+
+        </div>
+
+   <!-- MAIN GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- LEFT SIDE -->
+    <div class="lg:col-span-2 space-y-8">
+
+        <!-- RESULT (TOP) -->
+        <div class="bg-white rounded-3xl shadow-xl p-10 border border-slate-200">
+
+            <div class="flex flex-col md:flex-row items-center gap-8">
+
+                <!-- ICON -->
+                <div class="w-32 h-32 rounded-3xl flex items-center justify-center shadow-2xl
+                {% if data.result == 'Fake' %}
+                    bg-red-100
+                {% else %}
+                    bg-green-100
+                {% endif %}">
+
+                    {% if data.result == "Fake" %}
+                        <span class="text-6xl">⚠️</span>
+                    {% else %}
+                        <span class="text-6xl">✅</span>
+                    {% endif %}
+
+                </div>
+
+                <!-- RESULT -->
+                <div class="flex-1">
+
+                     <div class="flex justify-between mb-2">
+                            <span class="font-bold">Classification</span>
+                        </div>
+
+                    <h2 class="text-5xl font-black mb-6
+                    {% if data.result == 'Fake' %}
+                        text-red-500
+                    {% else %}
+                        text-green-500
+                    {% endif %}">
+                        {{ data.result }}
+                    </h2>
+
+                    <!-- CONFIDENCE -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="font-bold">Confidence Score</span>
+                            <span>{{ data.confidence }}%</span>
+                        </div>
+
+                        <div class="w-full bg-gray-200 h-4 rounded-full">
+                            <div class="h-4 rounded-full gradient-primary"
+                                 style="width: {{ data.confidence }}%;">
+                            </div>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                        <span class="font-bold">Fake Probability</span>
+                        <span>{{ data.fake_probability }}%</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ANALYSIS METRICS (SECOND) -->
+        <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+
+            <h2 class="text-2xl font-black mb-6">Analysis Metrics</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+              <!-- SENTIMENT CARD -->
+<div class="bg-blue-50 rounded-2xl p-6 border border-blue-100 shadow-sm">
+
+    <h3 class="text-lg font-black mb-4">Sentiment Score</h3>
+
+    {% set sentiment = data.sentiment %}
+
+    <p class="text-4xl font-black mb-2
+        {% if sentiment == 'Positive' %}
+            text-green-600
+        {% elif sentiment == 'Neutral' %}
+            text-yellow-500
+        {% else %}
+            text-red-600
+        {% endif %}
+    ">
+        {{ sentiment }}
+    </p>
+
+    <p class="text-sm font-bold mb-3">
+        {% if sentiment == 'Positive' %}
+            Positive 😊
+        {% elif sentiment == 'Neutral' %}
+            Neutral 😐
+        {% else %}
+            Negative 😡
+        {% endif %}
+    </p>
+
+    <!-- SCALE BAR -->
+    <div class="w-full bg-gray-200 h-2 rounded-full">
+        <div class="h-2 rounded-full
+            {% if sentiment == 'Positive' %}
+                bg-green-500 w-full
+            {% elif sentiment == 'Neutral' %}
+                bg-yellow-400 w-1/2
+            {% else %}
+                bg-red-500 w-1/4
+            {% endif %}
+        "></div>
+    </div>
+
+</div>
+
+<!-- BEHAVIOR CARD -->
+<div class="bg-purple-50 rounded-2xl p-6 border border-purple-100 shadow-sm">
+
+    <h3 class="text-lg font-black mb-4">Behavioral Score</h3>
+
+    {% set behavior = data.behavior %}
+
+    <!-- SCORE (KEEP ORIGINAL VALUE) -->
+    <p class="text-4xl font-black mb-2
+        {% if behavior < 40 %}
+            text-green-600
+        {% elif behavior < 70 %}
+            text-yellow-500
+        {% else %}
+            text-red-600
+        {% endif %}
+    ">
+        {{ behavior }}%
+    </p>
+
+    <!-- LABEL -->
+    <p class="text-sm font-bold mb-3">
+        {% if behavior < 40 %}
+            Safe 😊
+        {% elif behavior < 70 %}
+            Suspicious ⚠
+        {% else %}
+            High Risk 🚨
+        {% endif %}
+    </p>
+
+    <!-- SCALE BAR -->
+    <div class="w-full bg-gray-200 h-2 rounded-full">
+        <div class="h-2 rounded-full
+            {% if behavior < 40 %}
+                bg-green-500
+            {% elif behavior < 70 %}
+                bg-yellow-400
+            {% else %}
+                bg-red-500
+            {% endif %}"
+            style="width: {{ behavior }}%;">
+        </div>
+    </div>
+
+</div>
+
+            </div>
+        </div>
+
+        <!-- WHY THIS RESULT (EXPLAINABILITY BREAKDOWN) -->
+        <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+
+            <h2 class="text-2xl font-black text-slate-800 mb-2">
+                Why This Result?
+            </h2>
+
+            <p class="text-slate-500 font-medium mb-6">
+                {{ data.summary_note }}
+            </p>
+
+            <div class="space-y-3">
+
+                {% for item in data.breakdown %}
+
+                <div class="flex items-start gap-4 rounded-2xl p-4 border
+                    {% if item.triggered and item.direction == 'fake' %}
+                        bg-red-50 border-red-200
+                    {% elif item.triggered and item.direction == 'genuine' %}
+                        bg-green-50 border-green-200
+                    {% else %}
+                        bg-slate-50 border-slate-200
+                    {% endif %}">
+
+                    <div class="text-2xl flex-shrink-0">
+                        {% if item.triggered and item.direction == 'fake' %}
+                            ⚠️
+                        {% elif item.triggered and item.direction == 'genuine' %}
+                            ✅
+                        {% else %}
+                            ⬜
+                        {% endif %}
+                    </div>
+
+                    <div class="flex-1">
+
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <p class="font-black text-slate-800">
+                                {{ item.feature }}
+                            </p>
+
+                            <span class="text-xs font-bold px-3 py-1 rounded-full
+                                {% if item.triggered and item.direction == 'fake' %}
+                                    bg-red-100 text-red-600
+                                {% elif item.triggered and item.direction == 'genuine' %}
+                                    bg-green-100 text-green-600
+                                {% else %}
+                                    bg-slate-200 text-slate-500
+                                {% endif %}">
+                                {% if item.triggered %}Triggered{% else %}Not triggered{% endif %}
+                            </span>
+                        </div>
+
+                        <p class="text-sm text-slate-600 font-semibold mt-1">
+                            {{ item.value }}
+                        </p>
+
+                        <p class="text-sm text-slate-500 mt-2">
+                            {{ item.explanation }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <!-- REVIEW INFORMATION  -->
+        <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+
+            <h2 class="text-2xl font-black text-slate-800 mb-6">
+                Review Information
+            </h2>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
+
+                <div class="bg-slate-50 rounded-2xl p-5">
+                    <p class="text-xs text-slate-400 uppercase font-black mb-2">Platform</p>
+                    <p class="font-bold text-slate-800">{{ data.platform }}</p>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-5">
+                    <p class="text-xs text-slate-400 uppercase font-black mb-2">Category</p>
+                    <p class="font-bold text-slate-800">{{ data.category }}</p>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-5">
+                    <p class="text-xs text-slate-400 uppercase font-black mb-2">Brand</p>
+                    <p class="font-bold text-slate-800">{{ data.brand }}</p>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-5">
+                    <p class="text-xs text-slate-400 uppercase font-black mb-2">Product</p>
+                    <p class="font-bold text-slate-800">{{ data.product }}</p>
+                </div>
+
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+                    <p class="text-xs text-slate-400 uppercase font-black mb-2">Review Text</p>
+                    <p class="font-bold text-slate-800">{{ data.review }}</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="space-y-6">
+
+        <!-- SUMMARY -->
+        <div class="bg-white rounded-3xl shadow-xl p-8">
+
+            <h2 class="text-2xl font-black mb-6">Summary</h2>
+
+            <div class="space-y-3 font-bold">
+                <p>Result: {{ data.result }}</p>
+                <p>Sentiment: {{ data.sentiment }}</p>
+                <p>Behavior: {{ data.behavior }}%</p>
+                <p>Confidence: {{ data.confidence }}%</p>
+            </div>
+
+        </div>
+
+        <!-- DETECTED INDICATORS -->
+        <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+
+            <h2 class="text-2xl font-black mb-6">Detected Indicators</h2>
+
+            <div class="space-y-3">
+
+                {% if data.result == "Fake" %}
+
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-4 font-bold text-red-600">
+                    ⚠ Suspicious pattern detected
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-4 font-bold text-red-600">
+                    ⚠ Behavioral anomaly found
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-4 font-bold text-red-600">
+                    ⚠ Possible spam activity
+                </div>
+
+                {% else %}
+
+                <div class="bg-green-50 border border-green-200 rounded-2xl p-4 font-bold text-green-600">
+                    ✅ Natural review behavior
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-2xl p-4 font-bold text-green-600">
+                    ✅ Genuine writing style
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-2xl p-4 font-bold text-green-600">
+                    ✅ Low risk detected
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+<!-- SAVE -->
+<!-- CHANGED: guests are now auto-saved server-side in /predict (see
+     app.py - data["guest_auto_saved"] is set there) before this page
+     even renders, so no button is needed for them - showing a
+     confirmation message instead. Registered users are UNCHANGED:
+     they still get the manual "Save to History" button, exactly as
+     before. -->
+{% if session.get('user') %}
+
+<div class="gradient-dark text-white rounded-3xl shadow-xl p-8">
+
+    <h2 class="text-2xl font-black mb-4">Save Result? </h2>
+
+    <form action="/save_result" method="POST">
+
+        <input type="hidden" name="review" value="{{ data.review }}">
+        <input type="hidden" name="result" value="{{ data.result }}">
+        <input type="hidden" name="sentiment" value="{{ data.sentiment }}">
+        <input type="hidden" name="behavior" value="{{ data.behavior }}">
+        <input type="hidden" name="confidence" value="{{ data.confidence }}">
+        <input type="hidden" name="platform" value="{{ data.platform }}">
+        <input type="hidden" name="category" value="{{ data.category }}">
+        <input type="hidden" name="brand" value="{{ data.brand }}">
+        <input type="hidden" name="product" value="{{ data.product }}">
+        <input type="hidden" name="fake_probability" value="{{ data.fake_probability }}">
+
+        <input type="hidden" name="breakdown_json" value='{{ data.breakdown_json }}'>
+        <input type="hidden" name="summary_note" value="{{ data.summary_note }}">
+
+        <button class="w-full bg-white text-purple-700 font-black py-4 rounded-2xl">
+            Save to History
+        </button>
+
+    </form>
+
+</div>
+
+{% elif session.get('guest') %}
+
+<!-- ADDED: guest confirmation message - no button needed, since
+     /predict already auto-saved this result into guest_reviews before
+     this page rendered. -->
+<div class="gradient-dark text-white rounded-3xl shadow-xl p-8">
+
+    <h2 class="text-2xl font-black mb-4 flex items-center gap-2">
+        <span>✅</span> Saved Automatically
+    </h2>
+
+    <p class="text-purple-200 text-sm leading-relaxed">
+        This result was saved automatically and now counts toward the
+        community stats on the guest dashboard. Guest results aren't
+        tied to an account, so you won't be able to look this specific
+        result up again later.
+        <a href="/signup" class="underline font-bold">Create an account</a>
+        to keep a personal, searchable history instead.
+    </p>
+
+</div>
+
+{% else %}
+
+<div class="gradient-dark text-white rounded-3xl shadow-xl p-8">
+
+    <h2 class="text-2xl font-black mb-4">
+        Not Logged In
+    </h2>
+
+    <p class="text-purple-200 leading-relaxed mb-4">
+        Log in, create an account, or continue as guest to save this result.
+    </p>
+
+    <div class="flex gap-3">
+        <a href="/login" class="flex-1 text-center bg-white text-purple-700 font-black py-3 rounded-2xl">
+            Login
+        </a>
+        <a href="/continue_as_guest" class="flex-1 text-center bg-white bg-opacity-10 font-black py-3 rounded-2xl">
+            Continue as Guest
+        </a>
+    </div>
+
+</div>
+
+{% endif %}
+
+    </div>
+
+</div>
+</main>
+
+</div>
+
+</body>
+</html>

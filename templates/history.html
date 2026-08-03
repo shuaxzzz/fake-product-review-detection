@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<title>Review History</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+    font-family:'Outfit',sans-serif;
+    margin:0;
+}
+
+.gradient-primary{
+    background:linear-gradient(135deg,#ec4899 0%,#8b5cf6 50%,#3b82f6 100%);
+}
+
+.gradient-dark{
+    background:linear-gradient(180deg,#1e1b4b 0%,#312e81 100%);
+}
+
+.nav-item{
+    transition:0.3s;
+}
+
+.nav-item:hover{
+    background:rgba(255,255,255,0.1);
+    transform:translateX(5px);
+}
+
+html,body{
+    overflow-x:hidden;
+}
+
+aside{
+    width:18rem;
+    position:fixed;
+    top:0;
+    left:0;
+    height:100vh;
+}
+
+main{
+    margin-left:18rem;
+}
+
+.feedback-btn{
+    transition:0.2s;
+}
+
+.feedback-btn:hover{
+    transform:translateY(-2px);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="flex min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100">
+
+<!-- SIDEBAR -->
+<aside class="gradient-dark text-white flex flex-col shadow-2xl">
+
+    <!-- LOGO -->
+    <div class="p-8 border-b border-white border-opacity-10">
+
+        <div class="flex items-center gap-4">
+
+            <div class="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center shadow-xl">
+
+                <svg class="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+
+                <path stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+
+            </div>
+
+            <div>
+                <h1 class="text-2xl font-black">ReviewShield</h1>
+
+                <p class="text-sm text-purple-200">
+                    Fake Product Review Detection
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="flex-1 p-6 space-y-3">
+
+        <a href="/dashboard"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+
+            Dashboard
+        </a>
+
+        <a href="/detection"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+
+            Review Detection
+        </a>
+
+        <a href="/history"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-white bg-opacity-10">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+
+            History
+        </a>
+
+        <a href="/profile"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+
+            My Profile
+        </a>
+
+        <a href="/logout"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-red-500 hover:bg-red-600">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7"/>
+            </svg>
+
+            Logout
+        </a>
+
+    </nav>
+
+    <!-- USER -->
+    <div class="p-6 border-t border-white border-opacity-10">
+
+        <div class="bg-white bg-opacity-10 rounded-2xl p-4">
+
+            <div class="flex items-center gap-4">
+
+                <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center font-bold text-lg">
+                    {{ session['user']['username'][0] }}
+                </div>
+
+                <div>
+                    <p class="font-bold">{{ session['user']['username'] }}</p>
+
+                    <p class="text-sm text-purple-200">
+                        {{ session['user']['email'] }}
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>
+
+<!-- MAIN -->
+<main class="flex-1 p-10">
+
+    <!-- HEADER -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+
+        <div>
+            <h1 class="text-4xl font-black text-slate-800 mb-2">
+                Review History
+            </h1>
+
+            <p class="text-slate-500 text-lg">
+                Your saved review detections.
+                <!-- ADDED: explains the feedback purpose so users
+                     understand WHY the buttons matter (feeds dashboard
+                     accuracy), not just that they exist. -->
+                Mark results "Correct" or "Incorrect" to help track
+                model accuracy on your dashboard.
+            </p>
+        </div>
+
+        <!-- SEARCH -->
+        <form action="/history" method="GET" class="flex gap-3">
+            <input
+            type="text"
+            name="search"
+            value="{{ search or '' }}"
+            placeholder="Search your reviews..."
+            class="px-5 py-3 border-2 border-slate-200 rounded-xl font-semibold w-64 focus:outline-none focus:border-purple-300">
+
+            <button type="submit"
+            class="gradient-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg">
+                Search
+            </button>
+
+            {% if search %}
+            <a href="/history"
+            class="bg-white border-2 border-slate-200 text-slate-600 px-5 py-3 rounded-xl font-bold flex items-center">
+                Clear
+            </a>
+            {% endif %}
+        </form>
+
+    </div>
+
+    <!-- EMPTY STATE -->
+    {% if reviews|length == 0 %}
+
+    <div class="bg-white rounded-3xl shadow-xl p-16 border border-slate-200 text-center">
+
+        <p class="text-2xl font-black text-slate-700 mb-2">
+            {% if search %}
+                No reviews match "{{ search }}"
+            {% else %}
+                No saved reviews yet
+            {% endif %}
+        </p>
+
+        <p class="text-slate-500 font-medium mb-6">
+            {% if search %}
+                Try a different search term, or
+                <a href="/history" class="text-pink-500 underline">view all history</a>.
+            {% else %}
+                Analyze a review to start building your history.
+            {% endif %}
+        </p>
+
+        {% if not search %}
+        <a href="/detection"
+        class="inline-flex items-center gap-3 gradient-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg">
+            Start Detection
+        </a>
+        {% endif %}
+
+    </div>
+
+    {% else %}
+
+    <!-- REVIEW LIST -->
+    <div class="space-y-6">
+
+        {% for item in reviews %}
+
+        <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+
+            <!-- TOP ROW: result badge + meta + delete -->
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-5">
+
+                <div class="flex items-center gap-4">
+
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-md flex-shrink-0
+                    {% if item.result == 'Fake' %}
+                        bg-red-100
+                    {% else %}
+                        bg-green-100
+                    {% endif %}">
+
+                        {% if item.result == "Fake" %}
+                            <span class="text-2xl">⚠️</span>
+                        {% else %}
+                            <span class="text-2xl">✅</span>
+                        {% endif %}
+
+                    </div>
+
+                    <div>
+                        <p class="text-xl font-black
+                        {% if item.result == 'Fake' %}
+                            text-red-500
+                        {% else %}
+                            text-green-500
+                        {% endif %}">
+                            {{ item.result }}
+                        </p>
+
+                        <p class="text-sm text-slate-400 font-semibold">
+                            {{ item.product }} &bull; {{ item.platform }} &bull; {{ item.date }} {{ item.time }}
+                        </p>
+                    </div>
+
+                </div>
+
+                <a href="/delete/{{ item._id }}"
+                onclick="return confirm('Delete this review from your history?');"
+                class="text-sm font-bold text-red-500 hover:text-red-700 px-4 py-2 rounded-xl border-2 border-red-200 hover:bg-red-50">
+                    Delete
+                </a>
+
+            </div>
+
+            <!-- REVIEW TEXT -->
+            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 mb-5">
+                <p class="text-xs text-slate-400 uppercase font-black mb-2">Review Text</p>
+                <p class="font-semibold text-slate-700">{{ item.review }}</p>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+
+                <div class="bg-slate-50 rounded-2xl p-4">
+                    <p class="text-xs text-slate-400 uppercase font-black mb-1">Confidence</p>
+                    <p class="font-bold text-slate-800">{{ item.confidence }}%</p>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-4">
+                    <p class="text-xs text-slate-400 uppercase font-black mb-1">Sentiment</p>
+                    <p class="font-bold text-slate-800">{{ item.sentiment }}</p>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-4">
+                    <p class="text-xs text-slate-400 uppercase font-black mb-1">Brand</p>
+                    <p class="font-bold text-slate-800">{{ item.brand }}</p>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-4">
+                    <p class="text-xs text-slate-400 uppercase font-black mb-1">Category</p>
+                    <p class="font-bold text-slate-800">{{ item.category }}</p>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-4">
+                <p class="text-xs text-slate-400 uppercase font-black mb-1">Fake Probability</p>
+                <p class="font-bold text-slate-800">{{ item.fake_probability }}%</p>
+                </div>
+
+            </div>
+
+            <!-- BREAKDOWN (collapsible) -->
+            <!-- ADDED: surfaces the same explainability breakdown shown
+                 on the result page at the time this was saved, instead
+                 of only ever being visible once right after prediction.
+                 Collapsed by default to keep the list scannable. -->
+            {% if item.breakdown %}
+            <details class="mb-5 bg-slate-50 rounded-2xl border border-slate-200 p-5">
+                <summary class="font-black text-slate-700 cursor-pointer">
+                    Why this result?
+                </summary>
+
+                <p class="text-slate-500 text-sm font-medium mt-3 mb-4">
+                    {{ item.summary_note }}
+                </p>
+
+                <div class="space-y-2">
+                    {% for signal in item.breakdown %}
+                    {% if signal.triggered %}
+                    <div class="flex items-start gap-3 rounded-xl p-3 text-sm
+                        {% if signal.direction == 'fake' %}
+                            bg-red-50
+                        {% else %}
+                            bg-green-50
+                        {% endif %}">
+
+                        <span class="flex-shrink-0">
+                            {% if signal.direction == 'fake' %}⚠️{% else %}✅{% endif %}
+                        </span>
+
+                        <div>
+                            <span class="font-bold text-slate-700">{{ signal.feature }}:</span>
+                            <span class="text-slate-600">{{ signal.value }}</span>
+                        </div>
+
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </details>
+            {% endif %}
+
+            <!-- FEEDBACK -->
+            <!-- ADDED: this is the missing entry point for the /feedback
+                 route. Without this, user_feedback never gets set and
+                 the dashboard's "Prediction Accuracy" card can never
+                 show a value. Re-voting is allowed (POST again just
+                 overwrites via $set in app.py), so the buttons stay
+                 active even after a feedback choice has been made. -->
+            <div class="border-t border-slate-100 pt-5 flex flex-wrap items-center justify-between gap-4">
+
+                <p class="font-bold text-slate-700">
+                    Was this prediction correct?
+                </p>
+
+                <div class="flex items-center gap-3">
+
+                    {% if item.user_feedback == "correct" %}
+                    <span class="text-sm font-bold text-green-600 bg-green-50 px-4 py-2 rounded-xl">
+                        ✅ You confirmed: Correct
+                    </span>
+                    {% elif item.user_feedback == "incorrect" %}
+                    <span class="text-sm font-bold text-red-600 bg-red-50 px-4 py-2 rounded-xl">
+                        ⚠ You confirmed: Incorrect
+                    </span>
+                    {% endif %}
+
+                    <form action="/feedback/{{ item._id }}" method="POST">
+                        <input type="hidden" name="verdict" value="correct">
+                        <button type="submit"
+                        class="feedback-btn font-bold px-5 py-2 rounded-xl border-2
+                        {% if item.user_feedback == 'correct' %}
+                            bg-green-500 text-white border-green-500
+                        {% else %}
+                            bg-white text-green-600 border-green-200 hover:bg-green-50
+                        {% endif %}">
+                            Correct
+                        </button>
+                    </form>
+
+                    <form action="/feedback/{{ item._id }}" method="POST">
+                        <input type="hidden" name="verdict" value="incorrect">
+                        <button type="submit"
+                        class="feedback-btn font-bold px-5 py-2 rounded-xl border-2
+                        {% if item.user_feedback == 'incorrect' %}
+                            bg-red-500 text-white border-red-500
+                        {% else %}
+                            bg-white text-red-600 border-red-200 hover:bg-red-50
+                        {% endif %}">
+                            Incorrect
+                        </button>
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+</main>
+
+</div>
+
+</body>
+</html>

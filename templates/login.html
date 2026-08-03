@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<title>Login - ReviewShield</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+body{
+    font-family:'Outfit',sans-serif;
+}
+
+.gradient-primary{
+    background:linear-gradient(135deg,#ec4899 0%,#8b5cf6 50%,#3b82f6 100%);
+}
+
+.gradient-bg{
+    background:linear-gradient(135deg,#fce7f3,#ede9fe,#dbeafe);
+}
+</style>
+</head>
+
+
+<body class="gradient-bg min-h-screen flex items-center justify-center p-6">
+
+<div class="w-full max-w-md">
+
+    <div class="bg-white rounded-3xl shadow-2xl p-10">
+
+        <!-- ICON -->
+        <div class="text-center mb-8">
+
+            <div class="w-20 h-20 gradient-primary rounded-3xl flex items-center justify-center mx-auto mb-6 text-white text-3xl">
+                🔐
+            </div>
+
+            <h1 class="text-4xl font-black">Welcome Back</h1>
+            <p class="text-slate-500 mt-2">Log in to use your account</p>
+
+        </div>
+
+
+
+
+        <!-- FORM -->
+        <form method="POST" action="/login" class="space-y-5" onsubmit="return validateLogin()">
+
+            <div>
+                <label class="font-bold text-sm">Email</label>
+                <input type="email" name="email"
+                    class="w-full mt-2 px-5 py-4 border rounded-xl"
+                    placeholder="you@example.com"
+                    required>
+            </div>
+
+            <div>
+                <label class="font-bold text-sm">Password</label>
+                <input type="password" name="password"
+                    class="w-full mt-2 px-5 py-4 border rounded-xl"
+                    placeholder="••••••••"
+                    required>
+                    <div id="errorBox" class="hidden bg-red-100 text-red-600 px-4 py-3 rounded-xl text-sm font-semibold mt-3"></div>
+                    <div id="successBox" class="hidden bg-green-100 text-green-700 px-4 py-3 rounded-xl text-sm font-semibold mt-3"></div>
+            </div>
+
+            <button class="w-full gradient-primary text-white py-4 rounded-xl font-black">
+                Log In
+            </button>
+
+        </form>
+
+        <p class="text-center mt-6 text-slate-500">
+            No account?
+            <a href="/signup" class="text-purple-600 font-bold">Create account</a>
+        </p>
+
+    </div>
+<!-- BACK BUTTON (BELOW CARD - CLEAN UI) -->
+<div class="mt-6 text-center">
+    <a href="/" 
+       class="inline-flex items-center gap-2 text-purple-700 font-semibold 
+              hover:text-purple-900 transition">
+
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M15 19l-7-7 7-7"/>
+        </svg>
+
+        Back to Home
+    </a>
+</div>
+</div>
+<script>
+function validateLogin() {
+
+    const email = document.querySelector('input[name="email"]').value;
+    const password = document.querySelector('input[name="password"]').value;
+
+    const errorBox = document.getElementById("errorBox");
+
+    errorBox.classList.add("hidden");
+    errorBox.innerText = "";
+
+    if (!email || !password) {
+        errorBox.innerText = "Email and password are required.";
+        errorBox.classList.remove("hidden");
+        return false;
+    }
+
+    if (!email.includes("@")) {
+        errorBox.innerText = "Please enter a valid email address.";
+        errorBox.classList.remove("hidden");
+        return false;
+    }
+
+    if (password.length < 6) {
+        errorBox.innerText = "Password must be at least 6 characters long.";
+        errorBox.classList.remove("hidden");
+        return false;
+    }
+
+    return true;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<title>Review Detection</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+    font-family:'Outfit',sans-serif;
+    margin:0;
+}
+
+.gradient-primary{
+    background:linear-gradient(135deg,#ec4899 0%,#8b5cf6 50%,#3b82f6 100%);
+}
+
+.gradient-dark{
+    background:linear-gradient(180deg,#1e1b4b 0%,#312e81 100%);
+}
+
+.nav-item{
+    transition:0.3s;
+}
+
+.nav-item:hover{
+    background:rgba(255,255,255,0.1);
+    transform:translateX(5px);
+}
+
+.product-card{
+    transition:0.3s;
+}
+
+.product-card:hover{
+    transform:translateY(-5px);
+}
+
+.selected-product{
+    border:3px solid #ec4899 !important;
+}
+
+html,body{
+    overflow-x:hidden;
+}
+
+aside{
+    width:18rem;
+    position:fixed;
+    top:0;
+    left:0;
+    height:100vh;
+}
+
+main{
+    margin-left:18rem;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="flex min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100">
+
+<!-- SIDEBAR -->
+<aside class="gradient-dark text-white flex flex-col shadow-2xl">
+
+    <!-- LOGO -->
+    <div class="p-8 border-b border-white border-opacity-10">
+
+        <div class="flex items-center gap-4">
+
+            <div class="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center shadow-xl">
+
+                <svg class="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+
+                <path stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+
+            </div>
+
+            <div>
+                <h1 class="text-2xl font-black">ReviewShield</h1>
+
+                <p class="text-sm text-purple-200">
+                    Fake Product Review Detection
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="flex-1 p-6 space-y-3">
+
+        <a href="/dashboard"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-white bg-opacity-10">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+
+            Dashboard
+        </a>
+
+        <a href="/detection"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+
+            Review Detection
+        </a>
+
+       {% if session.get('user') %}
+
+        <a href="/history"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+
+            History
+        </a>
+
+        <a href="/profile"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+
+            My Profile
+        </a>
+
+        <a href="/logout"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-red-500 hover:bg-red-600">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7"/>
+            </svg>
+
+            Logout
+        </a>
+
+        {% else %}
+
+        <a href="/login"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 12h14"/>
+            </svg>
+
+            Login
+        </a>
+
+        <a href="/signup"
+        class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-pink-500 hover:bg-pink-600">
+
+            <svg class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"/>
+            </svg>
+
+            Create Account
+        </a>
+
+        {% endif %}
+
+        {% if session.get('guest') %}
+        <a href="/exit_guest"class="nav-item flex items-center gap-4 px-5 py-4 rounded-xl font-medium bg-red-500 hover:bg-red-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+     Exit Guest Mode
+</a>
+{% endif %}
+    </nav>
+
+    <!-- USER -->
+    <div class="p-6 border-t border-white border-opacity-10">
+
+        <div class="bg-white bg-opacity-10 rounded-2xl p-4">
+
+            {% if user %}
+
+            <div class="flex items-center gap-4">
+
+                <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center font-bold text-lg">
+                    {{ session['user']['username'][0] }}
+                </div>
+
+                <div>
+                    <p class="font-bold">{{ session['user']['username'] }}</p>
+
+                    <p class="text-sm text-purple-200">
+                        {{ session['user']['email'] }}
+                    </p>
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <div class="flex items-center gap-4">
+
+                <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center font-bold text-lg">
+                    G
+                </div>
+
+                <div>
+                    <p class="font-bold">Guest User</p>
+
+                    <p class="text-sm text-purple-200">
+                        Login to save results
+                    </p>
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</aside>
+
+<!-- MAIN -->
+<main class="flex-1 p-10">
+
+<div class="mb-10">
+
+    <h1 class="text-4xl font-black text-slate-800 mb-3">
+        Review Detection
+    </h1>
+
+    <p class="text-slate-600 text-xl font-medium">
+        Analyze product reviews for authenticity
+    </p>
+
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+<!-- LEFT -->
+<div class="lg:col-span-2 space-y-6">
+
+<!-- STEP 1 -->
+<div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+
+<div class="flex items-center gap-4 mb-6">
+
+<div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg">
+1
+</div>
+
+<h3 class="text-2xl font-black text-slate-800">
+Platform, Category & Brand
+</h3>
+
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+<!-- PLATFORM -->
+<div>
+
+<label class="block text-sm font-bold text-slate-700 mb-3">
+Platform
+</label>
+
+<select id="platform"
+onchange="platformChanged()"
+class="w-full px-5 py-4 border-2 border-slate-200 rounded-xl font-semibold">
+
+<option value="">Select Platform</option>
+<option value="Shopee">Shopee</option>
+<option value="Lazada">Lazada</option>
+
+</select>
+
+</div>
+
+<!-- CATEGORY -->
+<div>
+
+<label class="block text-sm font-bold text-slate-700 mb-3">
+Category
+</label>
+
+<select id="category"
+onchange="categoryChanged()"
+disabled
+class="w-full px-5 py-4 border-2 border-slate-200 rounded-xl font-semibold">
+
+<option value="">Select Category</option>
+
+</select>
+
+</div>
+
+<!-- BRAND -->
+<div>
+
+<label class="block text-sm font-bold text-slate-700 mb-3">
+Brand
+</label>
+
+<select id="brand"
+onchange="brandChanged()"
+disabled
+class="w-full px-5 py-4 border-2 border-slate-200 rounded-xl font-semibold">
+
+<option value="">Select Brand</option>
+
+</select>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- PRODUCTS -->
+<div id="product-section"
+class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200 hidden">
+
+<div class="flex items-center gap-4 mb-6">
+
+<div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg">
+2
+</div>
+
+<h3 class="text-2xl font-black text-slate-800">
+Select Product
+</h3>
+
+</div>
+
+<div id="productGrid"
+class="grid grid-cols-1 md:grid-cols-2 gap-5">
+</div>
+
+</div>
+
+<!-- REVIEW -->
+<div id="review-section"
+class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200 hidden">
+
+<div class="flex items-center gap-4 mb-6">
+
+<div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg">
+3
+</div>
+
+<h3 class="text-2xl font-black text-slate-800">
+Enter Review
+</h3>
+
+</div>
+
+<form action="/predict" method="POST">
+
+<div class="mb-6">
+
+<h3 class="font-black text-xl mb-4">
+Selected Product
+</h3>
+
+<div class="flex items-center gap-5 bg-slate-100 p-5 rounded-2xl">
+
+<img id="productImage"
+src=""
+class="w-28 h-28 object-cover rounded-2xl border">
+
+<div>
+
+<p id="selectedName"
+class="text-2xl font-black text-slate-800">
+</p>
+
+<p id="selectedBrand"
+class="text-slate-500 font-semibold">
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<textarea
+name="review"
+id="review-text"
+required
+rows="8"
+class="w-full px-5 py-4 border-2 border-slate-200 rounded-xl resize-none font-medium text-lg"
+placeholder="Paste review text here..."
+></textarea>
+
+<input type="hidden" name="product_name" id="selectedProductInput">
+<input type="hidden" name="platform" id="selectedPlatform">
+<input type="hidden" name="brand" id="selectedBrandInput">
+<input type="hidden" name="category" id="selectedCategory">
+
+<div class="flex justify-between items-center mt-5">
+
+<p class="text-sm text-slate-500 font-semibold">
+<span id="char-count">0</span> characters
+</p>
+
+<button type="submit"
+class="gradient-primary text-white px-10 py-4 rounded-xl font-black shadow-xl">
+Analyze Review
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="space-y-6">
+
+<div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+
+<h3 class="text-xl font-black text-slate-800 mb-6">
+Detection Features
+</h3>
+
+<div class="space-y-4">
+
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 bg-pink-100 rounded-lg"></div>
+<span class="text-slate-700 font-medium">
+NLP Processing
+</span>
+</div>
+
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 bg-purple-100 rounded-lg"></div>
+<span class="text-slate-700 font-medium">
+Sentiment Analysis
+</span>
+</div>
+
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 bg-blue-100 rounded-lg"></div>
+<span class="text-slate-700 font-medium">
+Behavioral Patterns
+</span>
+</div>
+
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 bg-emerald-100 rounded-lg"></div>
+<span class="text-slate-700 font-medium">
+ML Classification
+</span>
+</div>
+
+</div>
+
+</div>
+
+<div class="gradient-dark rounded-3xl shadow-xl p-8 text-white">
+
+<h3 class="text-2xl font-black mb-5">
+How Detection Works
+</h3>
+
+<p class="text-purple-200 leading-relaxed">
+Choose platform first, then category, then brand.
+Only matching products will appear.
+Review textbox only appears after product selection.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+<script>
+
+const products = {{ products | default([]) | tojson | safe }};
+
+const platformSelect = document.getElementById("platform");
+const categorySelect = document.getElementById("category");
+const brandSelect = document.getElementById("brand");
+
+function platformChanged(){
+
+    const platform = platformSelect.value;
+
+    resetProductAndReview();
+
+    categorySelect.innerHTML = `
+        <option value="">Select Category</option>
+    `;
+
+    brandSelect.innerHTML = `
+        <option value="">Select Brand</option>
+    `;
+
+    brandSelect.disabled = true;
+
+    if(platform === ""){
+        categorySelect.disabled = true;
+        return;
+    }
+
+    categorySelect.disabled = false;
+
+    let categories = [
+        ...new Set(
+            products
+            .filter(p => p.platform === platform)
+            .map(p => p.category)
+        )
+    ];
+
+    categories.forEach(c => {
+
+        categorySelect.innerHTML += `
+            <option value="${c}">
+                ${c}
+            </option>
+        `;
+
+    });
+
+}
+
+function categoryChanged(){
+
+    const platform = platformSelect.value;
+    const category = categorySelect.value;
+
+    resetProductAndReview();
+
+    brandSelect.innerHTML = `
+        <option value="">Select Brand</option>
+    `;
+
+    if(category === ""){
+        brandSelect.disabled = true;
+        return;
+    }
+
+    brandSelect.disabled = false;
+
+    let brands = [
+        ...new Set(
+            products
+            .filter(p =>
+                p.platform === platform &&
+                p.category === category
+            )
+            .map(p => p.brand)
+        )
+    ];
+
+    brands.forEach(b => {
+
+        brandSelect.innerHTML += `
+            <option value="${b}">
+                ${b}
+            </option>
+        `;
+
+    });
+
+}
+
+function brandChanged(){
+
+    const platform = platformSelect.value;
+    const category = categorySelect.value;
+    const brand = brandSelect.value;
+
+    document.getElementById("review-section").classList.add("hidden");
+
+    if(brand === ""){
+        document.getElementById("product-section").classList.add("hidden");
+        return;
+    }
+
+    let filtered = products.filter(p =>
+
+        p.platform === platform &&
+        p.category === category &&
+        p.brand === brand
+
+    );
+
+    renderProducts(filtered);
+
+    document.getElementById("product-section").classList.remove("hidden");
+
+}
+
+function renderProducts(list){
+
+    const productGrid = document.getElementById("productGrid");
+
+    productGrid.innerHTML = "";
+
+    if(list.length === 0){
+
+        productGrid.innerHTML = `
+        <div class="col-span-2 text-center text-slate-500 font-bold">
+            No products found
+        </div>
+        `;
+
+        return;
+    }
+
+    list.forEach((p,index) => {
+
+        const card = document.createElement("div");
+
+        card.className =
+        "product-card bg-white border-2 border-slate-200 rounded-2xl p-5 cursor-pointer shadow-md";
+
+        card.innerHTML = `
+
+            <img src="/static/${p.image}"
+            class="w-full h-52 object-cover rounded-xl mb-4">
+
+            <h3 class="font-black text-xl text-slate-800">
+                ${p.name}
+            </h3>
+
+            <p class="text-slate-500 font-semibold mt-1">
+                ${p.brand}
+            </p>
+
+            <div class="flex gap-2 mt-4">
+
+                <span class="bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-sm font-bold">
+                    ${p.platform}
+                </span>
+
+                <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-bold">
+                    ${p.category}
+                </span>
+
+            </div>
+
+        `;
+
+        card.onclick = function(){
+
+            selectProduct(
+                p.name,
+                p.image,
+                p.platform,
+                p.brand,
+                p.category,
+                card
+            );
+
+        };
+
+        productGrid.appendChild(card);
+
+    });
+
+}
+
+function selectProduct(name,image,platform,brand,category,element){
+
+    document.querySelectorAll(".product-card").forEach(card => {
+        card.classList.remove("selected-product");
+    });
+
+    element.classList.add("selected-product");
+
+    document.getElementById("selectedName").innerText = name;
+    document.getElementById("selectedBrand").innerText = brand;
+
+    document.getElementById("productImage").src = "/static/" + image;
+
+    document.getElementById("selectedProductInput").value = name;
+    document.getElementById("selectedPlatform").value = platform;
+    document.getElementById("selectedBrandInput").value = brand;
+    document.getElementById("selectedCategory").value = category;
+
+    document.getElementById("review-section").classList.remove("hidden");
+
+    document.getElementById("review-section").scrollIntoView({
+        behavior:"smooth"
+    });
+
+}
+
+function resetProductAndReview(){
+
+    document.getElementById("product-section").classList.add("hidden");
+    document.getElementById("review-section").classList.add("hidden");
+
+}
+
+document.getElementById("review-text").addEventListener("input", function(){
+
+    document.getElementById("char-count").innerText =
+    this.value.length;
+
+});
+
+</script>
+
+</body>
+</html>
