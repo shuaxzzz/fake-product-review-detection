@@ -89,10 +89,12 @@ def add_header(response):
 # ================= MONGO DB =================
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI", "mongodb://localhost:27017/fake_review_db")
 mongo = PyMongo(app)
-try:
-    mongo.cx.server_info()
-    print("MongoDB Connected Successfully")
-except Exception as e:
+
+print("MONGO_URI:", os.environ.get("MONGO_URI")) 
+try: 
+    mongo.cx.server_info() 
+    print("MongoDB Connected Successfully") 
+except Exception as e: 
     print("MongoDB Connection Failed")
     print(e)
 
