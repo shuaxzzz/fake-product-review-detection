@@ -13,8 +13,15 @@ from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from product import product_bp
 from scipy.sparse import hstack
+
+# ================= DATE =================
+MY_TZ = ZoneInfo("Asia/Kuala_Lumpur")
+
+def malaysia_now():
+    return datetime.now(MY_TZ)
 
 # ================= SECURITY: ENV VARIABLES =================
 from dotenv import load_dotenv
@@ -186,7 +193,7 @@ def extract_features(review, product_name):
         "review": review
     }) else 0
 
-    day_ago = datetime.now() - timedelta(days=1)
+    day_ago = malaysia_now() - timedelta(days=1)
     daily_review_count = mongo.db.reviews.count_documents({
         "product": product_name,
         "timestamp": {"$gte": day_ago}
@@ -199,7 +206,7 @@ def extract_features(review, product_name):
         sort=[("timestamp", -1)]
     )
     if last_review and "timestamp" in last_review:
-        time_delta_sec = (datetime.now() - last_review["timestamp"]).total_seconds()
+        time_delta_sec = (malaysia_now() - last_review["timestamp"]).total_seconds()
     else:
         time_delta_sec = 999999
 
@@ -585,7 +592,7 @@ def predict():
     # we're inserting into Mongo directly here, not round-tripping
     # through an HTML hidden field like /save_result does.
     if session.get("guest"):
-        current_time = datetime.now()
+        current_time = malaysia_now()
         guest_data = {
             "platform": platform,
             "category": category,
@@ -832,7 +839,7 @@ def save_result():
 
     print("DEBUG save_result | session:", dict(session), "| form_keys:", list(request.form.keys()))
 
-    current_time = datetime.now()
+    current_time = malaysia_now()
 
     import json
     breakdown_raw = request.form.get("breakdown_json", "")
